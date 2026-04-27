@@ -71,9 +71,7 @@ def align(offset, alignment):
     - `offset`: An integer
     - `alignment`: An integer
     """
-    if offset % alignment == 0:
-        return offset
-    return offset + (alignment - (offset % alignment))
+    pass
 
 
 def dosdate(dosdate, dostime):
@@ -82,35 +80,12 @@ def dosdate(dosdate, dostime):
     `dostime`: 2 bytes, little endian.
     returns: datetime.datetime or datetime.datetime.min on error
     """
-    try:
-        t = ord(dosdate[1]) << 8
-        t |= ord(dosdate[0])
-        day = t & 0b0000000000011111
-        month = (t & 0b0000000111100000) >> 5
-        year = (t & 0b1111111000000000) >> 9
-        year += 1980
-
-        t = ord(dostime[1]) << 8
-        t |= ord(dostime[0])
-        sec = t & 0b0000000000011111
-        sec *= 2
-        minute = (t & 0b0000011111100000) >> 5
-        hour = (t & 0b1111100000000000) >> 11
-
-        return datetime.datetime(year, month, day, hour, minute, sec)
-    except ValueError:
-        return datetime.datetime.min
+    pass
 
 
 def parse_filetime(qword):
     # see http://integriography.wordpress.com/2010/01/16/using-phython-to-parse-and-present-windows-64-bit-timestamps/
-    if qword == 0:
-        return datetime.datetime.min
-
-    try:
-        return datetime.datetime.fromtimestamp(float(qword) * 1e-7 - 11644473600, datetime.timezone.utc)
-    except (ValueError, OSError):
-        return datetime.datetime.min
+    pass
 
 
 class BinaryParserException(Exception):
@@ -201,70 +176,10 @@ class Block(object):
         - `offset`: A number.
         - `length`: (Optional) A number. For (w)strings, length in chars.
         """
-        if offset is None:
-            offset = self._implicit_offset
-
-        if length is None:
-
-            def no_length_handler():
-                f = getattr(self, "unpack_" + type)
-                return f(offset)
-
-            setattr(self, name, no_length_handler)
-        else:
-
-            def explicit_length_handler():
-                f = getattr(self, "unpack_" + type)
-                return f(offset, length)
-
-            setattr(self, name, explicit_length_handler)
-
-        setattr(self, "_off_" + name, offset)
-        if type == "byte":
-            self._implicit_offset = offset + 1
-        elif type == "int8":
-            self._implicit_offset = offset + 1
-        elif type == "word":
-            self._implicit_offset = offset + 2
-        elif type == "word_be":
-            self._implicit_offset = offset + 2
-        elif type == "int16":
-            self._implicit_offset = offset + 2
-        elif type == "dword":
-            self._implicit_offset = offset + 4
-        elif type == "dword_be":
-            self._implicit_offset = offset + 4
-        elif type == "int32":
-            self._implicit_offset = offset + 4
-        elif type == "qword":
-            self._implicit_offset = offset + 8
-        elif type == "int64":
-            self._implicit_offset = offset + 8
-        elif type == "float":
-            self._implicit_offset = offset + 4
-        elif type == "double":
-            self._implicit_offset = offset + 8
-        elif type == "dosdate":
-            self._implicit_offset = offset + 4
-        elif type == "filetime":
-            self._implicit_offset = offset + 8
-        elif type == "systemtime":
-            self._implicit_offset = offset + 8
-        elif type == "guid":
-            self._implicit_offset = offset + 16
-        elif type == "binary":
-            self._implicit_offset = offset + length
-        elif type == "string" and length is not None:
-            self._implicit_offset = offset + length
-        elif type == "wstring" and length is not None:
-            self._implicit_offset = offset + (2 * length)
-        elif "string" in type and length is None:
-            raise ParseException("Implicit offset not supported " "for dynamic length strings")
-        else:
-            raise ParseException("Implicit offset not supported " "for type: {}".format(type))
+        pass
 
     def current_field_offset(self):
-        return self._implicit_offset
+        pass
 
     def unpack_byte(self, offset):
         """
@@ -274,11 +189,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-        try:
-            return struct.unpack_from("<B", self._buf, o)[0]
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def unpack_int8(self, offset):
         """
@@ -288,11 +199,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-        try:
-            return struct.unpack_from("<b", self._buf, o)[0]
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def unpack_word(self, offset):
         """
@@ -303,11 +210,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-        try:
-            return struct.unpack_from("<H", self._buf, o)[0]
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def unpack_word_be(self, offset):
         """
@@ -318,11 +221,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-        try:
-            return struct.unpack_from(">H", self._buf, o)[0]
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def unpack_int16(self, offset):
         """
@@ -333,11 +232,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-        try:
-            return struct.unpack_from("<h", self._buf, o)[0]
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def pack_word(self, offset, word):
         """
@@ -346,8 +241,7 @@ class Block(object):
         - `offset`: The relative offset from the start of the block.
         - `word`: The data to apply.
         """
-        o = self._offset + offset
-        return struct.pack_into("<H", self._buf, o, word)
+        pass
 
     def unpack_dword(self, offset):
         """
@@ -357,11 +251,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-        try:
-            return struct.unpack_from("<I", self._buf, o)[0]
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def unpack_dword_be(self, offset):
         """
@@ -371,11 +261,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-        try:
-            return struct.unpack_from(">I", self._buf, o)[0]
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def unpack_int32(self, offset):
         """
@@ -386,11 +272,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-        try:
-            return struct.unpack_from("<i", self._buf, o)[0]
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def unpack_qword(self, offset):
         """
@@ -400,11 +282,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-        try:
-            return struct.unpack_from("<Q", self._buf, o)[0]
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def unpack_int64(self, offset):
         """
@@ -415,11 +293,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-        try:
-            return struct.unpack_from("<q", self._buf, o)[0]
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def unpack_float(self, offset):
         """
@@ -430,11 +304,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-        try:
-            return struct.unpack_from("<f", self._buf, o)[0]
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def unpack_double(self, offset):
         """
@@ -445,11 +315,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-        try:
-            return struct.unpack_from("<d", self._buf, o)[0]
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def unpack_binary(self, offset, length=False):
         """
@@ -461,13 +327,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        if not length:
-            return bytes("".encode("ascii"))
-        o = self._offset + offset
-        try:
-            return bytes(struct.unpack_from("<{}s".format(length), self._buf, o)[0])
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def unpack_string(self, offset, length):
         """
@@ -478,7 +338,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        return self.unpack_binary(offset, length).decode("ascii")
+        pass
 
     def unpack_wstring(self, offset, length):
         """
@@ -490,12 +350,7 @@ class Block(object):
         Throws:
         - `UnicodeDecodeError`
         """
-        start = self._offset + offset
-        end = self._offset + offset + 2 * length
-        try:
-            return bytes(self._buf[start:end]).decode("utf16")
-        except AttributeError:  # already a 'str' ?
-            return bytes(self._buf[start:end]).decode("utf16")
+        pass
 
     def unpack_dosdate(self, offset):
         """
@@ -506,11 +361,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        try:
-            o = self._offset + offset
-            return dosdate(self._buf[o : o + 2], self._buf[o + 2 : o + 4])
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
+        pass
 
     def unpack_filetime(self, offset):
         """
@@ -521,7 +372,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        return parse_filetime(self.unpack_qword(offset))
+        pass
 
     def unpack_systemtime(self, offset):
         """
@@ -533,14 +384,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-        try:
-            parts = struct.unpack_from("<HHHHHHHH", self._buf, o)
-        except struct.error:
-            raise OverrunBufferException(o, len(self._buf))
-        return datetime.datetime(
-            parts[0], parts[1], parts[3], parts[4], parts[5], parts[6], parts[7]  # skip part 2 (day of week)
-        )
+        pass
 
     def unpack_guid(self, offset):
         """
@@ -550,18 +394,7 @@ class Block(object):
         Throws:
         - `OverrunBufferException`
         """
-        o = self._offset + offset
-
-        try:
-            _bin = bytes(self._buf[o : o + 16])
-        except IndexError:
-            raise OverrunBufferException(o, len(self._buf))
-
-        # Yeah, this is ugly
-        h = [_bin[i] for i in range(len(_bin))]
-        return """{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}{:02x}{:02x}{:02x}""".format(
-            h[3], h[2], h[1], h[0], h[5], h[4], h[7], h[6], h[8], h[9], h[10], h[11], h[12], h[13], h[14], h[15]
-        )
+        pass
 
     def absolute_offset(self, offset):
         """
@@ -569,11 +402,11 @@ class Block(object):
         Arguments:
         - `offset`: The relative offset into this block.
         """
-        return self._offset + offset
+        pass
 
     def offset(self):
         """
         Equivalent to self.absolute_offset(0x0), which is the starting
           offset of this block.
         """
-        return self._offset
+        pass
